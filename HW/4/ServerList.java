@@ -3,6 +3,7 @@ public class ServerList {
     private ArrayList<Server> list;
 
     ServerList(int servers){
+        list = new ArrayList<Server>(servers);
         for(int i = 0; i < servers; i++){
             list.add(new Server());
         }
@@ -26,7 +27,9 @@ public class ServerList {
     }
     public void updateServiceTime(){
         for(int i = 0; i < list.size(); i++){
-            list.get(i).decrementServiceTime();
+            if(!list.get(i).isFree()){
+                list.get(i).decrementServiceTime();
+            }   
         }
     }
     public int getBusyServers(){
@@ -39,7 +42,11 @@ public class ServerList {
         return amtBusyServers;
     }
     public String toString(){
-        String s = "";
+        String s = "[";
+        for(int i = 0; i < list.size(); i++){
+            s += list.get(i).toString();
+        }
+        s += "]";
         return s;
     }
 }

@@ -32,6 +32,7 @@ public class Customer{
     @Override
     public String toString() {
         String s = "";
+        s += customerNo + " " + arrivalTime + " " + waitingTime;
         return s;
     }
 }

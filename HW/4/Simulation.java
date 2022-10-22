@@ -5,29 +5,57 @@ public class Simulation {
         try{
             System.out.println("Simulation parameters: ");
             System.out.println("Enter simulation time in minutes: ");
-            int simTime = scnr.nextInt();
+            int simTime = 100;//scnr.nextInt();
             System.out.println("Enter number of servers: ");
-            int numServers = scnr.nextInt();
+            int numServers = 1;//scnr.nextInt();
             System.out.println("Enter how fast customers arrive (customers per hour): ");
-            int cusPM = scnr.nextInt();
+            int cusPh = 10;//scnr.nextInt();
             System.out.println("Enter the amount of time it takes a server to serve a customer in minutes: ");
-            int servPM = scnr.nextInt();
+            int servPM = 5;//scnr.nextInt();
             //Intro parameters done
-            ServerList sl = new ServerList(numServers);
+            ServerList serverlist = new ServerList(numServers);
             CustomerQueue queue = new CustomerQueue();
+            int cusNum = 0;
+            int totalWaitingTime = 0;
+            int finishedCustomers = 0;
             for(int clock = 0; clock < simTime; clock++){
-                //Update the server list to decrement the service time of each busy server by one time unit (use the method updateServiceTime)
-                sl.updateServiceTime();
-                //If the customer’s queue is nonempty, increment the waiting time of each customer by one time unit (use the method incrementWaitingTime)
+                serverlist.updateServiceTime();
+                
                 if(!queue.isEmpty()){
                     queue.updateWaitingTime();
                 }
-                //If a customer arrives, add the customer to the customer queue. Generate a random number p between 0 and 1. If p < (customer arrival rate/60), assume a new customer arrived, otherwise no customer arrived
-                if((clock % cusPM) == 0){
-                    
+                double p = Math.random();
+                if(p < (double) cusPh/60){
+                    cusNum++;
+                    Customer cust = new Customer(cusNum, clock, 0);
+                    queue.addCustomer(cust);
+                    System.out.println("Customer " + cust.getCustomerNo() + " arrived at time " + cust.getArrivalTime());
                 }
-                //If a server is free and the customer queue is nonempty, remove a customer from the front of the queue and assign the customer to the free server (use getNextCustomer() to get the customer at the front of the queue, getFreeServer() to get the index of the first free server or -1 if all servers are busy, and setServerBusy() to assign a customer to a server)
+                int s = serverlist.getFreeServer();
+                if(clock % servPM == 0){
+                    serverlist.setServerBusy(s, null, 0);
+                }
+                if(serverlist.getFreeServer() != -1 && queue.isEmpty() == false){
+                    Customer c = queue.getNextCustomer();
+                    
+                    totalWaitingTime += c.getWaitingTime();
+                    serverlist.setServerBusy(s, c, servPM);
+                    System.out.println("Customer number " + cusNum + " assigned to server " + s);
+                }
             }    
+
+            System.out.println("Simulation time: " + simTime);
+            System.out.println("Number of servers: " + numServers);
+            System.out.println("Average service time: " + finishedCustomers / servPM);
+            System.out.println("Customer arrival rate: " + cusPh);
+            System.out.println("Total customers: " + cusNum);
+            System.out.println("Customers served: " + finishedCustomers);
+            System.out.println("Number of customers still being served: " + serverlist.getBusyServers());
+            System.out.println("Number of customers left in the queue: " + queue.size());
+            System.out.println("Total waiting time: " + totalWaitingTime);
+            System.out.println("Average waiting time per customer: " + totalWaitingTime / cusNum);
+
+
         }catch(Exception e){
             System.out.println(e.getMessage());
         }

@@ -28,7 +28,11 @@ public class CustomerQueue {
         return customers.size();
     }
     public String toString(){
-        String s = "";
+        String s = "[";
+        while(customers.peek() != null){
+            s += customers.poll();
+        }
+        s += "]";
         return s;
     }
 }

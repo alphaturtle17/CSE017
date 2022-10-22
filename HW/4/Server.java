@@ -43,6 +43,7 @@ public class Server {
     @Override
     public String toString(){
         String s = "";
+        s += currentCustomer + " " + status + " " + serviceTime;
         return s;
     }
 }
